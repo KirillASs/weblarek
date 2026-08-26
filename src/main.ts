@@ -1,15 +1,17 @@
 import './scss/styles.scss';
 import { API_URL } from './utils/constants';
 import { apiProducts } from './utils/data';
-import { Catalog } from './components/base/Models/Catalog';
-import { Cart } from './components/base/Models/Cart';
-import { Customer } from './components/base/Models/Customer';
-import { ProductGateway } from './components/base/Api';
+import { Api } from './components/base/Api';
+import { Catalog } from './components/Models/Catalog';
+import { Cart } from './components//Models/Cart';
+import { Customer } from './components/Models/Customer';
+import { ProductGateway } from './components/ProductGateway';
 
 const catalogModel = new Catalog();
 const cartModel = new Cart();
 const customerModel = new Customer();
-const gateway = new ProductGateway(API_URL);
+const api = new Api(API_URL);
+const gateway = new ProductGateway(api);
 const srverCatalog = new Catalog()
 
 
@@ -56,8 +58,6 @@ console.log("Очистка всех данных о пользователе:",
 
 customerModel.setData({payment: "cash"})
 console.log("Валидация всей формы:", customerModel.validate());
-console.log("Валидация отдельного поля, заполнено:", customerModel.validateField("payment"));
-console.log("Валидация отдельного поля, не заполнено:", customerModel.validateField("email"));
 
 console.log("---------------------------------------")
 console.log("Тест запросов сервера")

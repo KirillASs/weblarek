@@ -1,4 +1,4 @@
-import { IBuyer } from '../../../types/index';
+import { IBuyer } from '../../types/index';
 
 type ValidationErrors = Partial<Record<keyof IBuyer, string>>
 
@@ -52,25 +52,5 @@ export class Customer {
             return errors;
     }
 
-    validateField(field: keyof IBuyer): string | null {
-        const value = this.data[field];
-
-        if (!value) {
-            switch (field) {
-                case 'payment':
-                    return 'Не выбран способ оплаты';
-                case 'address':
-                    return 'Адрес не может быть пустым';
-                case 'phone':
-                    return 'Телефон не может быть пустым';
-                case 'email':
-                    return 'Email не может быть пустым';
-                default:
-                    return 'Поле не может быть пустым';
-            }
-        }
-
-        return null
-    }
 
 }
