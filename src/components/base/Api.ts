@@ -1,3 +1,5 @@
+import { IOrderRequest, IProductsResponse, IOrderResult, } from "../../types";
+
 type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
 export class Api {
@@ -33,5 +35,22 @@ export class Api {
             method,
             body: JSON.stringify(data)
         }).then(this.handleResponse<T>);
+    }
+}
+
+
+export class ProductGateway {
+    private api: Api;
+
+    constructor(baseUrl: string, options: RequestInit = {}) {
+        this.api = new Api(baseUrl, options);
+    }
+
+    getProducts(): Promise<IProductsResponse> {
+        return this.api.get<IProductsResponse>('/product')
+    }
+
+    createOrder(orderData: IOrderRequest): Promise<IOrderResult> {
+        return this.api.post<IOrderResult>('/order', orderData);
     }
 }

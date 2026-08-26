@@ -20,3 +20,36 @@ export interface IBuyer {
     email: string,
     phone: string
 }
+
+
+/**
+ * Ответ сервера при получении списка товаров
+ */
+export interface IProductsResponse {
+    total: number;          // Общее количество товаров
+    items: IProduct[];      // Массив товаров
+}
+
+/**
+ * Данные для создания заказа (отправляются на сервер)
+ */
+export interface IOrderRequest extends IBuyer {
+    items: string[];  // Массив ID товаров
+    total: number;    // Общая стоимость заказа
+}
+
+/**
+ * Ответ сервера после создания заказа
+ */
+export interface IOrderResult {
+    id: string;       // ID созданного заказа
+    total: number;    // Итоговая сумма заказа
+}
+
+/**
+ * Ответ сервера при ошибке
+ */
+export interface IApiError {
+    error: string;    // Текст ошибки
+    status?: number;  // HTTP статус (опционально)
+}
