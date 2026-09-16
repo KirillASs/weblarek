@@ -6,6 +6,8 @@ import { Catalog } from './components/Models/Catalog';
 import { Cart } from './components//Models/Cart';
 import { Customer } from './components/Models/Customer';
 import { ProductGateway } from './components/ProductGateway';
+import { Header } from './components/View/UI/Header';
+import { ensureElement } from './utils/utils';
 
 const catalogModel = new Catalog();
 const cartModel = new Cart();
@@ -72,4 +74,16 @@ gateway.getProducts().then(response => {
     console.log('Каталог после сохранения:', srverCatalog.getItems());
 }).catch(error => {
     console.error("Ошибка при получении товара",error)
+})
+
+//Проверка слоя View
+
+const headerContainer = ensureElement<HTMLElement>('.header')
+
+    let counter = 0
+
+const header = new Header(headerContainer, {onBasketClick: () => {   
+        header.counter = ++counter
+        console.log('basket click!')
+    }
 })

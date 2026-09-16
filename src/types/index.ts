@@ -53,3 +53,17 @@ export interface IApiError {
     error: string;    // Текст ошибки
     status?: number;  // HTTP статус (опционально)
 }
+
+/**
+ * Описание интерфейсов для классов View
+ */
+
+// Данные компонента
+export interface IHeader {
+    counter: number;
+}
+
+// Действия пользователя
+export interface IHeaderActions {
+    onBasketClick: () => void;
+}

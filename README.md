@@ -374,3 +374,620 @@ Presenter - презентер содержит основную логику п
 - **Параметры:** `orderData` — объект с данными заказа
 - **Возвращает:** промис с объектом результата заказа
 - **Пример:** `const result = await ProductGateway.createOrder({ items: [...], payment: 'card', ... });`
+
+### Слой Представления (View)
+
+#### Класс `Header`
+
+##### Описание
+Класс `Header` отвечает за изменение счетчика корзины при изменении количества товаров и открытие корзины с товарами.
+Класс наследует абстрактный класс `Component<IHeader>`.
+
+##### Типы и интерфейсы
+
+интерфейс `IHeader`
+
+`counter: number`
+
+интерфейс `IHeaderActions`
+
+`onBasketClick: () => void`
+
+##### Конструктор: 
+**`new Header(container: HTMLElement, actions: IHeaderActions)`** 
+- Создает экземпляр класса для работы с шапкой сайта
+**Параметры:**
+  - `container` — корневой DOM-элемент шапки
+  - `actions` — объект с обработчиком клика по корзине
+- **Пример:** `const header = new Header(container, { onBasketClick: () => modal.open(basket.render()) });`
+
+##### Поля класса:
+
+**`basketButton: HTMLButtonElement`** (protected)
+- html елемент basketButton для открытия корзины
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.basketButton = ensureElement<HTMLButtonElement>(".header__basket", this.container);`
+
+**`counterElement: HTMLElement`** (protected)
+- html елемент counterElement для отображения количества товаров
+- Формат: объект `HTMLElement`
+- Пример: `this.counterElement = ensureElement(".header__basket-counter", this.container);`
+
+##### Методы
+**`set counter(value: number)`**
+- Устанавливает количество товаров
+- **Параметры:** `value` — количество товаров, число
+- **Возвращает:** неявный `void`
+- **Пример:** `header.counter = cart.getTotalCount();`
+
+
+#### Класс `Gallery`
+
+##### Описание
+Класс `Gallery` отвечает за отображение списка карточек товаров в каталоге.
+Класс наследует абстрактный класс `Component<IGallery>`.
+
+##### Типы и интерфейсы
+
+интерфейс `IGallery`
+
+`catalog: HTMLElement[]`
+
+##### Конструктор:
+**`new Gallery(container: HTMLElement)`**
+- Создает экземпляр класса для работы с галереей товаров
+**Параметры:**
+  - `container` — корневой DOM-элемент галереи (`.gallery`)
+- **Пример:** `const gallery = new Gallery(document.querySelector('.gallery'));`
+
+##### Поля класса:
+
+**`container: HTMLElement`** (protected, readonly)
+- html елемент container для отображения карточек товаров
+- Формат: объект `HTMLElement`
+- Пример: `this.container` — корневой элемент галереи
+
+##### Методы
+**`set catalog(items: HTMLElement[])`**
+- Устанавливает карточки товаров в галерею
+- **Параметры:** `items` — массив DOM-элементов карточек
+- **Возвращает:** неявный `void`
+- **Пример:** `gallery.catalog = cards;`
+
+
+#### Абстрактный класс `Card<T extends ICard>`
+
+##### Описание
+Класс `Card` является базовым абстрактным классом для всех карточек товара. Содержит общие поля и сеттеры для отображения заголовка и цены.
+Класс наследует абстрактный класс `Component<T>`.
+
+##### Типы и интерфейсы
+
+интерфейс `ICard`
+
+`title: string`
+
+`price: number | null`
+
+##### Конструктор:
+**`protected constructor(container: HTMLElement)`**
+- Создает экземпляр класса для работы с карточкой
+**Параметры:**
+  - `container` — корневой DOM-элемент карточки
+- **Пример:** `super(container);`
+
+##### Поля класса:
+
+**`titleElement: HTMLElement`** (protected)
+- html елемент titleElement для отображения заголовка
+- Формат: объект `HTMLElement`
+- Пример: `this.titleElement = ensureElement(".card__title", this.container);`
+
+**`priceElement: HTMLElement`** (protected)
+- html елемент priceElement для отображения цены
+- Формат: объект `HTMLElement`
+- Пример: `this.priceElement = ensureElement(".card__price", this.container);`
+
+##### Методы
+**`set title(value: string)`**
+- Устанавливает заголовок карточки
+- **Параметры:** `value` — текст заголовка, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `card.title = product.title;`
+
+**`set price(value: number | null)`**
+- Устанавливает цену товара
+- **Параметры:** `value` — цена или `null`
+- **Возвращает:** неявный `void`
+- **Пример:** `card.price = product.price;`
+
+
+#### Класс `CardCatalog`
+
+##### Описание
+Класс `CardCatalog` отвечает за отображение карточки товара в каталоге: изображение, категория, заголовок и цена.
+Класс наследует абстрактный класс `Card<ICardCatalog>`.
+
+##### Типы и интерфейсы
+
+интерфейс `ICardCatalog`
+
+`title: string`
+
+`price: number | null`
+
+`image: string`
+
+`category: string`
+
+##### Конструктор:
+**`new CardCatalog(container: HTMLElement)`**
+- Создает экземпляр класса для работы с карточкой каталога
+**Параметры:**
+  - `container` — корневой DOM-элемент карточки
+- **Пример:** `const card = new CardCatalog(cloneTemplate('#card-catalog'));`
+
+##### Поля класса:
+
+**`imageElement: HTMLImageElement`** (protected)
+- html елемент imageElement для отображения изображения
+- Формат: объект `HTMLImageElement`
+- Пример: `this.imageElement = ensureElement<HTMLImageElement>(".card__image", this.container);`
+
+**`categoryElement: HTMLElement`** (protected)
+- html елемент categoryElement для отображения категории
+- Формат: объект `HTMLElement`
+- Пример: `this.categoryElement = ensureElement(".card__category", this.container);`
+
+##### Методы
+**`set image(value: string)`**
+- Устанавливает изображение товара
+- **Параметры:** `value` — путь к изображению, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `card.image = product.image;`
+
+**`set category(value: string)`**
+- Устанавливает категорию товара
+- **Параметры:** `value` — название категории, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `card.category = product.category;`
+
+
+#### Класс `CardPreview`
+
+##### Описание
+Класс `CardPreview` отвечает за отображение карточки товара в модальном окне: изображение, категория, заголовок, описание, цена и кнопка действия.
+Класс наследует абстрактный класс `Card<ICardPreview>`.
+
+##### Типы и интерфейсы
+
+интерфейс `ICardPreview`
+
+`title: string`
+
+`price: number | null`
+
+`image: string`
+
+`category: string`
+
+`text: string`
+
+интерфейс `ICardPreviewActions`
+
+`onAddToCart: () => void`
+
+##### Конструктор:
+**`new CardPreview(container: HTMLElement, actions: ICardPreviewActions)`**
+- Создает экземпляр класса для работы с карточкой превью
+**Параметры:**
+  - `container` — корневой DOM-элемент карточки
+  - `actions` — объект с обработчиком добавления в корзину
+- **Пример:** `const card = new CardPreview(container, { onAddToCart: () => cart.addItem(product) });`
+
+##### Поля класса:
+
+**`imageElement: HTMLImageElement`** (protected)
+- html елемент imageElement для отображения изображения
+- Формат: объект `HTMLImageElement`
+- Пример: `this.imageElement = ensureElement<HTMLImageElement>(".card__image", this.container);`
+
+**`categoryElement: HTMLElement`** (protected)
+- html елемент categoryElement для отображения категории
+- Формат: объект `HTMLElement`
+- Пример: `this.categoryElement = ensureElement(".card__category", this.container);`
+
+**`textElement: HTMLElement`** (protected)
+- html елемент textElement для отображения описания
+- Формат: объект `HTMLElement`
+- Пример: `this.textElement = ensureElement(".card__text", this.container);`
+
+**`buttonElement: HTMLButtonElement`** (protected)
+- html елемент buttonElement для добавления в корзину
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.buttonElement = ensureElement<HTMLButtonElement>(".card__button", this.container);`
+
+##### Методы
+**`set image(value: string)`**
+- Устанавливает изображение товара
+- **Параметры:** `value` — путь к изображению, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `card.image = product.image;`
+
+**`set category(value: string)`**
+- Устанавливает категорию товара
+- **Параметры:** `value` — название категории, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `card.category = product.category;`
+
+**`set text(value: string)`**
+- Устанавливает описание товара
+- **Параметры:** `value` — текст описания, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `card.text = product.description;`
+
+
+#### Класс `CardBasket`
+
+##### Описание
+Класс `CardBasket` отвечает за отображение карточки товара в корзине: порядковый номер, заголовок, цена и кнопка удаления.
+Класс наследует абстрактный класс `Card<ICardBasket>`.
+
+##### Типы и интерфейсы
+
+интерфейс `ICardBasket`
+
+`title: string`
+
+`price: number | null`
+
+интерфейс `ICardBasketActions`
+
+`onDelete: () => void`
+
+##### Конструктор:
+**`new CardBasket(container: HTMLElement, actions: ICardBasketActions)`**
+- Создает экземпляр класса для работы с карточкой корзины
+**Параметры:**
+  - `container` — корневой DOM-элемент карточки
+  - `actions` — объект с обработчиком удаления
+- **Пример:** `const card = new CardBasket(container, { onDelete: () => cart.removeItem(product) });`
+
+##### Поля класса:
+
+**`indexElement: HTMLElement`** (protected)
+- html елемент indexElement для отображения порядкового номера
+- Формат: объект `HTMLElement`
+- Пример: `this.indexElement = ensureElement(".basket__item-index", this.container);`
+
+**`deleteButton: HTMLButtonElement`** (protected)
+- html елемент deleteButton для удаления товара
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.deleteButton = ensureElement<HTMLButtonElement>(".basket__item-delete", this.container);`
+
+##### Методы
+**`set index(value: number)`**
+- Устанавливает порядковый номер товара
+- **Параметры:** `value` — номер в корзине, число
+- **Возвращает:** неявный `void`
+- **Пример:** `card.index = index + 1;`
+
+
+#### Класс `Modal`
+
+##### Описание
+Класс `Modal` отвечает за отображение модального окна с контентом и его закрытие.
+Класс не наследует `Component`, так как не отображает данные, а управляет состоянием.
+
+##### Типы и интерфейсы
+
+интерфейс `IModalActions`
+
+`onClose: () => void`
+
+##### Конструктор:
+**`new Modal(container: HTMLElement, actions: IModalActions)`**
+- Создает экземпляр класса для работы с модальным окном
+**Параметры:**
+  - `container` — корневой DOM-элемент модального окна
+  - `actions` — объект с обработчиком закрытия
+- **Пример:** `const modal = new Modal(container, { onClose: () => modal.close() });`
+
+##### Поля класса:
+
+**`container: HTMLElement`** (protected)
+- html елемент container для модального окна
+- Формат: объект `HTMLElement`
+- Пример: `this.container = container;`
+
+**`contentElement: HTMLElement`** (protected)
+- html елемент contentElement для отображения контента
+- Формат: объект `HTMLElement`
+- Пример: `this.contentElement = ensureElement(".modal__content", container);`
+
+**`closeButton: HTMLButtonElement`** (protected)
+- html елемент closeButton для закрытия модального окна
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.closeButton = ensureElement<HTMLButtonElement>(".modal__close", container);`
+
+##### Методы
+**`open(content: HTMLElement)`**
+- Открывает модальное окно с переданным контентом
+- **Параметры:** `content` — DOM-элемент для отображения
+- **Возвращает:** неявный `void`
+- **Пример:** `modal.open(basket.render());`
+
+**`close()`**
+- Закрывает модальное окно и очищает контент
+- **Возвращает:** неявный `void`
+- **Пример:** `modal.close();`
+
+
+#### Класс `Basket`
+
+##### Описание
+Класс `Basket` отвечает за отображение списка товаров в корзине, общей суммы и кнопки оформления заказа.
+Класс наследует абстрактный класс `Component<IBasket>`.
+
+##### Типы и интерфейсы
+
+интерфейс `IBasket`
+
+`items: HTMLElement[]`
+
+`total: number`
+
+интерфейс `IBasketActions`
+
+`onCheckout: () => void`
+
+##### Конструктор:
+**`new Basket(container: HTMLElement, actions: IBasketActions)`**
+- Создает экземпляр класса для работы с корзиной
+**Параметры:**
+  - `container` — корневой DOM-элемент корзины
+  - `actions` — объект с обработчиком оформления заказа
+- **Пример:** `const basket = new Basket(container, { onCheckout: () => modal.open(orderForm.render()) });`
+
+##### Поля класса:
+
+**`listElement: HTMLElement`** (protected)
+- html елемент listElement для отображения списка товаров
+- Формат: объект `HTMLElement`
+- Пример: `this.listElement = ensureElement(".basket__list", this.container);`
+
+**`priceElement: HTMLElement`** (protected)
+- html елемент priceElement для отображения общей суммы
+- Формат: объект `HTMLElement`
+- Пример: `this.priceElement = ensureElement(".basket__price", this.container);`
+
+**`checkoutButton: HTMLButtonElement`** (protected)
+- html елемент checkoutButton для оформления заказа
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.checkoutButton = ensureElement<HTMLButtonElement>(".basket__button", this.container);`
+
+##### Методы
+**`set items(items: HTMLElement[])`**
+- Устанавливает список карточек товаров
+- **Параметры:** `items` — массив DOM-элементов карточек
+- **Возвращает:** неявный `void`
+- **Пример:** `basket.items = cards;`
+
+**`set total(value: number)`**
+- Устанавливает общую сумму
+- **Параметры:** `value` — сумма, число
+- **Возвращает:** неявный `void`
+- **Пример:** `basket.total = cart.getTotalPrice();`
+
+
+#### Класс `OrderForm`
+
+##### Описание
+Класс `OrderForm` отвечает за отображение формы заказа, выбор способа оплаты и ввод адреса доставки.
+Класс наследует абстрактный класс `Component<IOrderForm>`.
+
+##### Типы и интерфейсы
+
+интерфейс `IOrderForm`
+
+`payment: 'card' | 'cash' | ''`
+
+`address: string`
+
+`valid: boolean`
+
+`errors: string`
+
+интерфейс `IOrderFormActions`
+
+`onPaymentChange: (payment: 'card' | 'cash') => void`
+
+`onAddressChange: (address: string) => void`
+
+`onSubmit: () => void`
+
+##### Конструктор:
+**`new OrderForm(container: HTMLElement, actions: IOrderFormActions)`**
+- Создает экземпляр класса для работы с формой заказа
+**Параметры:**
+  - `container` — корневой DOM-элемент формы заказа
+  - `actions` — объект с обработчиками
+- **Пример:** `const orderForm = new OrderForm(container, { onPaymentChange: ..., onAddressChange: ..., onSubmit: ... });`
+
+##### Поля класса:
+
+**`cardButton: HTMLButtonElement`** (protected)
+- html елемент cardButton для выбора оплаты картой
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.cardButton = ensureElement<HTMLButtonElement>('button[name="card"]', this.container);`
+
+**`cashButton: HTMLButtonElement`** (protected)
+- html елемент cashButton для выбора оплаты наличными
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.cashButton = ensureElement<HTMLButtonElement>('button[name="cash"]', this.container);`
+
+**`addressInput: HTMLInputElement`** (protected)
+- html елемент addressInput для ввода адреса доставки
+- Формат: объект `HTMLInputElement`
+- Пример: `this.addressInput = ensureElement<HTMLInputElement>('input[name="address"]', this.container);`
+
+**`submitButton: HTMLButtonElement`** (protected)
+- html елемент submitButton для отправки формы
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.container);`
+
+**`errorsElement: HTMLElement`** (protected)
+- html елемент errorsElement для отображения ошибок
+- Формат: объект `HTMLElement`
+- Пример: `this.errorsElement = ensureElement(".form__errors", this.container);`
+
+##### Методы
+**`set payment(value: 'card' | 'cash' | '')`**
+- Устанавливает выбранный способ оплаты
+- **Параметры:** `value` — способ оплаты
+- **Возвращает:** неявный `void`
+- **Пример:** `orderForm.payment = 'card';`
+
+**`set address(value: string)`**
+- Устанавливает адрес доставки
+- **Параметры:** `value` — адрес, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `orderForm.address = 'г. Москва, ул. Тверская, д. 12';`
+
+**`set valid(value: boolean)`**
+- Устанавливает доступность кнопки отправки
+- **Параметры:** `value` — валидность формы, boolean
+- **Возвращает:** неявный `void`
+- **Пример:** `orderForm.valid = true;`
+
+**`set errors(value: string)`**
+- Устанавливает текст ошибок
+- **Параметры:** `value` — текст ошибки, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `orderForm.errors = 'Выберите способ оплаты';`
+
+
+#### Класс `ContactsForm`
+
+##### Описание
+Класс `ContactsForm` отвечает за отображение формы контактов, ввод email и телефона покупателя.
+Класс наследует абстрактный класс `Component<IContactsForm>`.
+
+##### Типы и интерфейсы
+
+интерфейс `IContactsForm`
+
+`email: string`
+
+`phone: string`
+
+`valid: boolean`
+
+`errors: string`
+
+интерфейс `IContactsFormActions`
+
+`onEmailChange: (email: string) => void`
+
+`onPhoneChange: (phone: string) => void`
+
+`onSubmit: () => void`
+
+##### Конструктор:
+**`new ContactsForm(container: HTMLElement, actions: IContactsFormActions)`**
+- Создает экземпляр класса для работы с формой контактов
+**Параметры:**
+  - `container` — корневой DOM-элемент формы контактов
+  - `actions` — объект с обработчиками
+- **Пример:** `const contactsForm = new ContactsForm(container, { onEmailChange: ..., onPhoneChange: ..., onSubmit: ... });`
+
+##### Поля класса:
+
+**`emailInput: HTMLInputElement`** (protected)
+- html елемент emailInput для ввода email
+- Формат: объект `HTMLInputElement`
+- Пример: `this.emailInput = ensureElement<HTMLInputElement>('input[name="email"]', this.container);`
+
+**`phoneInput: HTMLInputElement`** (protected)
+- html елемент phoneInput для ввода телефона
+- Формат: объект `HTMLInputElement`
+- Пример: `this.phoneInput = ensureElement<HTMLInputElement>('input[name="phone"]', this.container);`
+
+**`submitButton: HTMLButtonElement`** (protected)
+- html елемент submitButton для отправки формы
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.container);`
+
+**`errorsElement: HTMLElement`** (protected)
+- html елемент errorsElement для отображения ошибок
+- Формат: объект `HTMLElement`
+- Пример: `this.errorsElement = ensureElement(".form__errors", this.container);`
+
+##### Методы
+**`set email(value: string)`**
+- Устанавливает email покупателя
+- **Параметры:** `value` — email, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `contactsForm.email = 'ivan@example.com';`
+
+**`set phone(value: string)`**
+- Устанавливает телефон покупателя
+- **Параметры:** `value` — телефон, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `contactsForm.phone = '+7 (999) 123-45-67';`
+
+**`set valid(value: boolean)`**
+- Устанавливает доступность кнопки отправки
+- **Параметры:** `value` — валидность формы, boolean
+- **Возвращает:** неявный `void`
+- **Пример:** `contactsForm.valid = true;`
+
+**`set errors(value: string)`**
+- Устанавливает текст ошибок
+- **Параметры:** `value` — текст ошибки, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `contactsForm.errors = 'Укажите email';`
+
+
+#### Класс `Success`
+
+##### Описание
+Класс `Success` отвечает за отображение экрана успешного оформления заказа с суммой списания и кнопкой возврата к покупкам.
+Класс наследует абстрактный класс `Component<ISuccess>`.
+
+##### Типы и интерфейсы
+
+интерфейс `ISuccess`
+
+`total: number`
+
+интерфейс `ISuccessActions`
+
+`onClose: () => void`
+
+##### Конструктор:
+**`new Success(container: HTMLElement, actions: ISuccessActions)`**
+- Создает экземпляр класса для работы с экраном успеха
+**Параметры:**
+  - `container` — корневой DOM-элемент экрана успеха
+  - `actions` — объект с обработчиком закрытия
+- **Пример:** `const success = new Success(container, { onClose: () => modal.close() });`
+
+##### Поля класса:
+
+**`descriptionElement: HTMLElement`** (protected)
+- html елемент descriptionElement для отображения суммы списания
+- Формат: объект `HTMLElement`
+- Пример: `this.descriptionElement = ensureElement(".order-success__description", this.container);`
+
+**`closeButton: HTMLButtonElement`** (protected)
+- html елемент closeButton для закрытия экрана успеха
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.closeButton = ensureElement<HTMLButtonElement>(".order-success__close", this.container);`
+
+##### Методы
+**`set total(value: number)`**
+- Устанавливает сумму списания
+- **Параметры:** `value` — сумма, число
+- **Возвращает:** неявный `void`
+- **Пример:** `success.total = cart.getTotalPrice();`
