@@ -403,7 +403,7 @@ Presenter - презентер содержит основную логику п
 
 ##### Поля класса:
 
-**`basketButton: HTMLButtonElement`** (protected)
+**`buttonBasket: HTMLButtonElement`** (protected)
 - html елемент basketButton для открытия корзины
 - Формат: объект `HTMLButtonElement`
 - Пример: `this.basketButton = ensureElement<HTMLButtonElement>(".header__basket", this.container);`
@@ -510,11 +510,7 @@ Presenter - презентер содержит основную логику п
 
 ##### Типы и интерфейсы
 
-интерфейс `ICardCatalog`
-
-`title: string`
-
-`price: number | null`
+интерфейс `ICardCatalog extends ICard`
 
 `image: string`
 
@@ -660,7 +656,7 @@ Presenter - презентер содержит основную логику п
 - Формат: объект `HTMLElement`
 - Пример: `this.indexElement = ensureElement(".basket__item-index", this.container);`
 
-**`deleteButton: HTMLButtonElement`** (protected)
+**`buttonDelete: HTMLButtonElement`** (protected)
 - html елемент deleteButton для удаления товара
 - Формат: объект `HTMLButtonElement`
 - Пример: `this.deleteButton = ensureElement<HTMLButtonElement>(".basket__item-delete", this.container);`
@@ -705,7 +701,7 @@ Presenter - презентер содержит основную логику п
 - Формат: объект `HTMLElement`
 - Пример: `this.contentElement = ensureElement(".modal__content", container);`
 
-**`closeButton: HTMLButtonElement`** (protected)
+**`buttonClose: HTMLButtonElement`** (protected)
 - html елемент closeButton для закрытия модального окна
 - Формат: объект `HTMLButtonElement`
 - Пример: `this.closeButton = ensureElement<HTMLButtonElement>(".modal__close", container);`

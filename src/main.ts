@@ -8,6 +8,7 @@ import { Customer } from './components/Models/Customer';
 import { ProductGateway } from './components/ProductGateway';
 import { Header } from './components/View/UI/Header';
 import { ensureElement } from './utils/utils';
+import { Gallery } from './components/View/UI/Gallery';
 
 const catalogModel = new Catalog();
 const cartModel = new Cart();
@@ -77,7 +78,7 @@ gateway.getProducts().then(response => {
 })
 
 //Проверка слоя View
-
+// Header
 const headerContainer = ensureElement<HTMLElement>('.header')
 
     let counter = 0
@@ -87,3 +88,18 @@ const header = new Header(headerContainer, {onBasketClick: () => {
         console.log('basket click!')
     }
 })
+
+//Gallery 
+
+const gallery = new Gallery(ensureElement('.gallery'));
+
+const cards = apiProducts.items.map(product => {
+    // Создаём div вручную (вместо CardCatalog)
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.textContent = `${product.title} — ${product.price ?? 'Цена не указана'}`;
+    
+    return card;
+});
+
+gallery.catalog = cards

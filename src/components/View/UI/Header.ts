@@ -4,14 +4,14 @@ import type { IHeader, IHeaderActions } from "../../../types";
 
 export class Header extends Component<IHeader> {
     protected counterElement: HTMLElement;
-    protected basketButton: HTMLButtonElement;
+    protected buttonBasket: HTMLButtonElement;
 
     constructor(container: HTMLElement, actions: IHeaderActions){
         super(container);
         this.counterElement = ensureElement<HTMLElement>(".header__basket-counter", this.container);
-        this.basketButton = ensureElement<HTMLButtonElement>(".header__basket", this.container);
+        this.buttonBasket = ensureElement<HTMLButtonElement>(".header__basket", this.container);
 
-        this.basketButton.addEventListener('click', actions.onBasketClick)
+        this.buttonBasket.addEventListener('click', actions.onBasketClick)
     }
 
     set counter(value: number) {
