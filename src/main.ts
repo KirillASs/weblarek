@@ -1,105 +1,44 @@
 import './scss/styles.scss';
 import { API_URL } from './utils/constants';
-import { apiProducts } from './utils/data';
 import { Api } from './components/base/Api';
 import { Catalog } from './components/Models/Catalog';
-import { Cart } from './components//Models/Cart';
+import { Cart } from './components/Models/Cart';
 import { Customer } from './components/Models/Customer';
 import { ProductGateway } from './components/ProductGateway';
 import { Header } from './components/View/UI/Header';
 import { ensureElement } from './utils/utils';
 import { Gallery } from './components/View/UI/Gallery';
+import { EventEmitter } from './components/base/Events';
+import { Modal } from './components/View/UI/Modal';
+import { Presenter } from './components/Presenter/Presenter';
 
-const catalogModel = new Catalog();
-const cartModel = new Cart();
-const customerModel = new Customer();
-const api = new Api(API_URL);
-const gateway = new ProductGateway(api);
-const srverCatalog = new Catalog()
+// 1. Брокер событий
+const events = new EventEmitter();
 
+// 2. API
+const api = new ProductGateway(new Api(API_URL));
 
-// Тестирование экземпляра класса каталога
-console.log("Тестирование экземпляра класса каталога")
-console.log("---------------------------------------")
-catalogModel.setItems(apiProducts.items);
-catalogModel.setSelectedItem(apiProducts.items[3])
-console.log("Массив товаров из каталога:", catalogModel.getItems());
-console.log("Элемент взятый по id:", catalogModel.getItemById("c101ab44-ed99-4a54-990d-47aa2bb4e7d9"));
-console.log("Отображение выбранного элемента дял подробного просмотра:", catalogModel.getSelectedItem());
-console.log("---------------------------------------")
+// 3. Модели
+const catalog = new Catalog(events);
+const cart = new Cart(events);
+const customer = new Customer(events);
 
-// Тестирование экземпляра класса корзины
-console.log("Тестирование экземпляра класса корзины")
-console.log("---------------------------------------")
-console.log("Массив товаров из корзины:", cartModel.getItems());
-cartModel.addItem(apiProducts.items[2]);
-cartModel.addItem(apiProducts.items[1]);
-cartModel.addItem(apiProducts.items[0]);
-console.log("Массив товаров из корзины, добавленно несколько эллементов методом add:", cartModel.getItems());
-console.log("Количество товаров из корзины:", cartModel.getTotalCount());
-console.log("Общая цена товаров из корзины:", cartModel.getTotalPrice());
-console.log("Проверка наличия товара оп id, товар содержится в корзине:", cartModel.containsItem("b06cde61-912f-4663-9751-09956c0eed67"));
-console.log("Проверка наличия товара оп id, товар не содержится в корзине:", cartModel.containsItem("412bcf81-7e75-4e70-bdb9-d3c73c9803b7"));
-
-
-cartModel.removeItem(apiProducts.items[2])
-console.log("Удален один товар из корзины:", cartModel.getItems());
-
-cartModel.clear();
-console.log("Полностью очищеная корзина методом clear:", cartModel.getItems());
-console.log("---------------------------------------")
-
-// Тестирование экземпляра класса покупателя
-console.log("Тестирование экземпляра класса пользователя")
-console.log("---------------------------------------")
-
-customerModel.setData({payment: "card", email: "some@gmail.com"});
-console.log("Добавление данных о пользователе:", customerModel.getData());
-
-customerModel.clear();
-console.log("Очистка всех данных о пользователе:", customerModel.getData());
-
-customerModel.setData({payment: "cash"})
-console.log("Валидация всей формы:", customerModel.validate());
-
-console.log("---------------------------------------")
-console.log("Тест запросов сервера")
-console.log("---------------------------------------")
-
-gateway.getProducts().then(response => {
-    console.log("всего товаров на сервере: ", response.total)
-    console.log("массив товаров на сервере: ", response.items)
-
-    srverCatalog.setItems(response.items)
-
-    console.log('Каталог после сохранения:', srverCatalog.getItems());
-}).catch(error => {
-    console.error("Ошибка при получении товара",error)
-})
-
-//Проверка слоя View
-// Header
-const headerContainer = ensureElement<HTMLElement>('.header')
-
-    let counter = 0
-
-const header = new Header(headerContainer, {onBasketClick: () => {   
-        header.counter = ++counter
-        console.log('basket click!')
-    }
-})
-
-//Gallery 
-
+// 4. Постоянные View
+const header = new Header(ensureElement('.header'), {onBasketClick() {
+    events.emit('basket:open');
+}});
 const gallery = new Gallery(ensureElement('.gallery'));
+const modal = new Modal(ensureElement('.modal'), {onClose() {
+    events.emit('modal:close')
+},})
 
-const cards = apiProducts.items.map(product => {
-    // Создаём div вручную (вместо CardCatalog)
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.textContent = `${product.title} — ${product.price ?? 'Цена не указана'}`;
-    
-    return card;
-});
-
-gallery.catalog = cards
+const presenter = new Presenter(
+    events,
+    catalog,
+    cart,
+    customer,
+    api,
+    header,
+    gallery,
+    modal
+)
