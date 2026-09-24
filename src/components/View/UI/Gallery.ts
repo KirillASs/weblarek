@@ -1,13 +1,18 @@
 import { Component } from "../../base/Component";
 import { IGallery } from "../../../types";
 
-export class Gallery extends Component<IGallery>{
+/**
+ * Галерея карточек товаров.
+ * Отображает массив готовых DOM-элементов карточек.
+ */
+export class Gallery extends Component<IGallery> {
 
-    constructor (container: HTMLElement){
-        super(container)
+    constructor(container: HTMLElement) {
+        super(container);
     }
 
-    set catalog(items: HTMLElement[]){
-        this.container.replaceChildren(...items)
+    /** Устанавливает карточки товаров в галерею */
+    set catalog(items: HTMLElement[]) {
+        this.container.replaceChildren(...items);
     }
 }

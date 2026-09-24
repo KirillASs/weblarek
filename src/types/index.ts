@@ -1,29 +1,46 @@
+// ============================================================
+// API
+// ============================================================
+
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
+/**
+ * Интерфейс для работы с API.
+ */
 export interface IApi {
     get<T extends object>(uri: string): Promise<T>;
     post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
 
-export interface IProduct {
-    id: string,
-    title: string,
-    image: string,
-    category: string,
-    price: null | number,
-    description: string
-}
 
-export interface IBuyer {
-    payment: "card" | "cash" | "",
-    address: string,
-    email: string,
-    phone: string
-}
-
+// ============================================================
+// МОДЕЛИ ДАННЫХ (Model)
+// ============================================================
 
 /**
- * Ответ сервера при получении списка товаров
+ * Товар.
+ */
+export interface IProduct {
+    id: string;
+    title: string;
+    image: string;
+    category: string;
+    price: null | number;
+    description: string;
+}
+
+/**
+ * Данные покупателя.
+ */
+export interface IBuyer {
+    payment: 'card' | 'cash' | '';
+    address: string;
+    email: string;
+    phone: string;
+}
+
+/**
+ * Ответ сервера при получении списка товаров.
  */
 export interface IProductsResponse {
     total: number;          // Общее количество товаров
@@ -31,98 +48,226 @@ export interface IProductsResponse {
 }
 
 /**
- * Данные для создания заказа (отправляются на сервер)
+ * Данные для создания заказа (отправляются на сервер).
  */
 export interface IOrderRequest extends IBuyer {
-    items: string[];  // Массив ID товаров
-    total: number;    // Общая стоимость заказа
+    items: string[];        // Массив ID товаров
+    total: number;          // Общая стоимость заказа
 }
 
 /**
- * Ответ сервера после создания заказа
+ * Ответ сервера после создания заказа.
  */
 export interface IOrderResult {
-    id: string;       // ID созданного заказа
-    total: number;    // Итоговая сумма заказа
+    id: string;             // ID созданного заказа
+    total: number;          // Итоговая сумма заказа
 }
 
 /**
- * Ответ сервера при ошибке
+ * Ответ сервера при ошибке.
  */
 export interface IApiError {
-    error: string;    // Текст ошибки
-    status?: number;  // HTTP статус (опционально)
+    error: string;          // Текст ошибки
+    status?: number;        // HTTP статус (опционально)
 }
 
+
+// ============================================================
+// ОБЩИЕ ИНТЕРФЕЙСЫ ДЛЯ VIEW
+// ============================================================
+
 /**
- * Описание интерфейсов для классов View
+ * Базовые данные любой формы.
  */
+export interface IFormData {
+    valid: boolean;
+    errors: string;
+}
 
 
+// ============================================================
 // HEADER
-// Данные компонента
+// ============================================================
+
+/**
+ * Данные шапки сайта.
+ */
 export interface IHeader {
     counter: number;
 }
 
-// Действия пользователя
+/**
+ * Действия пользователя в шапке.
+ */
 export interface IHeaderActions {
     onBasketClick: () => void;
 }
 
+
+// ============================================================
 // GALLERY
-// Данные компонента
-export interface IGallery{
+// ============================================================
+
+/**
+ * Данные галереи карточек товаров.
+ */
+export interface IGallery {
     catalog: HTMLElement[];
 }
 
-//CARD abstract
+
+// ============================================================
+// CARD (базовый класс)
+// ============================================================
+
+/**
+ * Базовые данные карточки.
+ */
 export interface ICard {
     title: string;
     price: number | null;
 }
 
-//CardCatalog
+
+// ============================================================
+// CARD CATALOG
+// ============================================================
+
+/**
+ * Данные карточки товара в каталоге.
+ */
 export interface ICardCatalog extends ICard {
     image: string;
     category: string;
 }
 
-//CardPreview
-export interface ICardPreview extends ICardCatalog{
+
+// ============================================================
+// CARD PREVIEW
+// ============================================================
+
+/**
+ * Данные карточки товара в модальном окне.
+ */
+export interface ICardPreview extends ICardCatalog {
     text: string;
 }
-//Добавление карточек CardPreview в корзину
+
+/**
+ * Действия пользователя в карточке превью.
+ */
 export interface ICardPreviewActions {
     onAddToCart: () => void;
 }
-//CardBasket
+
+
+// ============================================================
+// CARD BASKET
+// ============================================================
+
+/**
+ * Данные карточки товара в корзине.
+ */
 export interface ICardBasket extends ICard {}
-//
+
+/**
+ * Действия пользователя в карточке корзины.
+ */
 export interface ICardBasketActions {
     onDelete: () => void;
 }
 
-//Modal
+
+// ============================================================
+// MODAL
+// ============================================================
+
+/**
+ * Действия пользователя в модальном окне.
+ */
 export interface IModalActions {
     onClose: () => void;
 }
 
-// Basket
+
+// ============================================================
+// BASKET
+// ============================================================
+
+/**
+ * Данные корзины.
+ */
 export interface IBasket {
     items: HTMLElement[];
     total: number;
 }
 
+/**
+ * Действия пользователя в корзине.
+ */
 export interface IBasketActions {
     onCheckout: () => void;
 }
 
-// sucsess
+
+// ============================================================
+// SUCCESS
+// ============================================================
+
+/**
+ * Данные экрана успешного оформления заказа.
+ */
 export interface ISuccess {
     total: number;
 }
 
+/**
+ * Действия пользователя на экране успеха.
+ */
 export interface ISuccessActions {
     onClose: () => void;
+}
+
+
+// ============================================================
+// ORDER FORM
+// ============================================================
+
+/**
+ * Данные формы заказа.
+ */
+export interface IOrderForm extends IFormData {
+    payment: 'card' | 'cash' | '';
+    address: string;
+}
+
+/**
+ * Действия пользователя в форме заказа.
+ */
+export interface IOrderFormActions {
+    onPaymentChange: (payment: 'card' | 'cash') => void;
+    onAddressChange: (address: string) => void;
+    onSubmit: () => void;
+}
+
+
+// ============================================================
+// CONTACTS FORM
+// ============================================================
+
+/**
+ * Данные формы контактов.
+ */
+export interface IContactsForm extends IFormData {
+    email: string;
+    phone: string;
+}
+
+/**
+ * Действия пользователя в форме контактов.
+ */
+export interface IContactsFormActions {
+    onEmailChange: (email: string) => void;
+    onPhoneChange: (phone: string) => void;
+    onSubmit: () => void;
 }

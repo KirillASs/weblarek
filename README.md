@@ -403,10 +403,10 @@ Presenter - презентер содержит основную логику п
 
 ##### Поля класса:
 
-**`buttonBasket: HTMLButtonElement`** (protected)
+**`basketButton: HTMLButtonElement`** (protected)
 - html елемент basketButton для открытия корзины
 - Формат: объект `HTMLButtonElement`
-- Пример: `this.basketButton = ensureElement<HTMLButtonElement>(".header__basket", this.container);`
+- Пример: `this.buttonBasket = ensureElement<HTMLButtonElement>(".header__basket", this.container);`
 
 **`counterElement: HTMLElement`** (protected)
 - html елемент counterElement для отображения количества товаров
@@ -659,7 +659,7 @@ Presenter - презентер содержит основную логику п
 **`buttonDelete: HTMLButtonElement`** (protected)
 - html елемент deleteButton для удаления товара
 - Формат: объект `HTMLButtonElement`
-- Пример: `this.deleteButton = ensureElement<HTMLButtonElement>(".basket__item-delete", this.container);`
+- Пример: `this.buttonDelete = ensureElement<HTMLButtonElement>(".basket__item-delete", this.container);`
 
 ##### Методы
 **`set index(value: number)`**
@@ -701,7 +701,7 @@ Presenter - презентер содержит основную логику п
 - Формат: объект `HTMLElement`
 - Пример: `this.contentElement = ensureElement(".modal__content", container);`
 
-**`buttonClose: HTMLButtonElement`** (protected)
+**`closeButton: HTMLButtonElement`** (protected)
 - html елемент closeButton для закрытия модального окна
 - Формат: объект `HTMLButtonElement`
 - Пример: `this.closeButton = ensureElement<HTMLButtonElement>(".modal__close", container);`
@@ -775,24 +775,69 @@ Presenter - презентер содержит основную логику п
 - **Возвращает:** неявный `void`
 - **Пример:** `basket.total = cart.getTotalPrice();`
 
+#### Абстрактный класс `Form<T extends IFormData>`
+
+##### Описание
+Класс `Form` является базовым абстрактным классом для всех форм приложения. Содержит общие для любой формы поля и методы: кнопку отправки и блок вывода ошибок, а также управление их состоянием.
+
+Класс наследует абстрактный класс `Component<T>`.
+
+Наследники: `OrderForm`, `ContactsForm`.
+
+##### Типы и интерфейсы
+
+интерфейс `IFormData`
+
+`valid: boolean`
+
+`errors: string`
+
+##### Конструктор:
+**`protected constructor(container: HTMLElement)`**
+- Создает экземпляр класса для работы с формой
+- **Параметры:**
+  - `container` — корневой DOM-элемент формы
+- **Пример:** `super(container);` — вызывается в конструкторах наследников
+
+##### Поля класса:
+
+**`submitButton: HTMLButtonElement`** (protected)
+- html елемент submitButton для отправки формы
+- Формат: объект `HTMLButtonElement`
+- Пример: `this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.container);`
+
+**`errorsElement: HTMLElement`** (protected)
+- html елемент errorsElement для отображения ошибок формы
+- Формат: объект `HTMLElement`
+- Пример: `this.errorsElement = ensureElement<HTMLElement>('.form__errors', this.container);`
+
+##### Методы
+
+**`set valid(value: boolean)`**
+- Управляет доступностью кнопки отправки формы
+- **Параметры:** `value` — валидность формы, boolean
+- **Возвращает:** неявный `void`
+- **Пример:** `form.valid = true;` — кнопка отправки станет активной
+
+**`set errors(value: string)`**
+- Устанавливает текст ошибок формы
+- **Параметры:** `value` — текст ошибки, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `form.errors = 'Выберите способ оплаты';`
 
 #### Класс `OrderForm`
 
 ##### Описание
 Класс `OrderForm` отвечает за отображение формы заказа, выбор способа оплаты и ввод адреса доставки.
-Класс наследует абстрактный класс `Component<IOrderForm>`.
+Класс наследует абстрактный класс `Form<IOrderForm>`.
 
 ##### Типы и интерфейсы
 
-интерфейс `IOrderForm`
+интерфейс `IOrderForm extends IFormData`
 
 `payment: 'card' | 'cash' | ''`
 
 `address: string`
-
-`valid: boolean`
-
-`errors: string`
 
 интерфейс `IOrderFormActions`
 
@@ -827,16 +872,6 @@ Presenter - презентер содержит основную логику п
 - Формат: объект `HTMLInputElement`
 - Пример: `this.addressInput = ensureElement<HTMLInputElement>('input[name="address"]', this.container);`
 
-**`submitButton: HTMLButtonElement`** (protected)
-- html елемент submitButton для отправки формы
-- Формат: объект `HTMLButtonElement`
-- Пример: `this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.container);`
-
-**`errorsElement: HTMLElement`** (protected)
-- html елемент errorsElement для отображения ошибок
-- Формат: объект `HTMLElement`
-- Пример: `this.errorsElement = ensureElement(".form__errors", this.container);`
-
 ##### Методы
 **`set payment(value: 'card' | 'cash' | '')`**
 - Устанавливает выбранный способ оплаты
@@ -850,36 +885,20 @@ Presenter - презентер содержит основную логику п
 - **Возвращает:** неявный `void`
 - **Пример:** `orderForm.address = 'г. Москва, ул. Тверская, д. 12';`
 
-**`set valid(value: boolean)`**
-- Устанавливает доступность кнопки отправки
-- **Параметры:** `value` — валидность формы, boolean
-- **Возвращает:** неявный `void`
-- **Пример:** `orderForm.valid = true;`
-
-**`set errors(value: string)`**
-- Устанавливает текст ошибок
-- **Параметры:** `value` — текст ошибки, строка
-- **Возвращает:** неявный `void`
-- **Пример:** `orderForm.errors = 'Выберите способ оплаты';`
-
 
 #### Класс `ContactsForm`
 
 ##### Описание
 Класс `ContactsForm` отвечает за отображение формы контактов, ввод email и телефона покупателя.
-Класс наследует абстрактный класс `Component<IContactsForm>`.
+Класс наследует абстрактный класс `Form<IContactsForm>`.
 
 ##### Типы и интерфейсы
 
-интерфейс `IContactsForm`
+интерфейс `IContactsForm extends IFormData`
 
 `email: string`
 
 `phone: string`
-
-`valid: boolean`
-
-`errors: string`
 
 интерфейс `IContactsFormActions`
 
@@ -909,16 +928,6 @@ Presenter - презентер содержит основную логику п
 - Формат: объект `HTMLInputElement`
 - Пример: `this.phoneInput = ensureElement<HTMLInputElement>('input[name="phone"]', this.container);`
 
-**`submitButton: HTMLButtonElement`** (protected)
-- html елемент submitButton для отправки формы
-- Формат: объект `HTMLButtonElement`
-- Пример: `this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.container);`
-
-**`errorsElement: HTMLElement`** (protected)
-- html елемент errorsElement для отображения ошибок
-- Формат: объект `HTMLElement`
-- Пример: `this.errorsElement = ensureElement(".form__errors", this.container);`
-
 ##### Методы
 **`set email(value: string)`**
 - Устанавливает email покупателя
@@ -931,18 +940,6 @@ Presenter - презентер содержит основную логику п
 - **Параметры:** `value` — телефон, строка
 - **Возвращает:** неявный `void`
 - **Пример:** `contactsForm.phone = '+7 (999) 123-45-67';`
-
-**`set valid(value: boolean)`**
-- Устанавливает доступность кнопки отправки
-- **Параметры:** `value` — валидность формы, boolean
-- **Возвращает:** неявный `void`
-- **Пример:** `contactsForm.valid = true;`
-
-**`set errors(value: string)`**
-- Устанавливает текст ошибок
-- **Параметры:** `value` — текст ошибки, строка
-- **Возвращает:** неявный `void`
-- **Пример:** `contactsForm.errors = 'Укажите email';`
 
 
 #### Класс `Success`
