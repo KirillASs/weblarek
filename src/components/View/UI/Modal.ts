@@ -19,8 +19,15 @@ export class Modal {
         this.contentElement = ensureElement<HTMLElement>('.modal__content', this.container);
         this.closeButton = ensureElement<HTMLButtonElement>('.modal__close', this.container);
 
-        // Слушатель — один раз в конструкторе
+        // Клик по крестику
         this.closeButton.addEventListener('click', actions.onClose);
+
+        // Клик по фону (вне .modal__container)
+        this.container.addEventListener('click', (event) => {
+            if (event.target === this.container) {
+                actions.onClose();
+            }
+        });
     }
 
     /** Открывает модальное окно с переданным контентом */

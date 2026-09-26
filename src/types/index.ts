@@ -141,6 +141,12 @@ export interface ICardCatalog extends ICard {
     category: string;
 }
 
+/**
+ * Действия пользователя в карточке каталога.
+ */
+export interface ICardCatalogActions {
+    onSelect: () => void;
+}
 
 // ============================================================
 // CARD PREVIEW

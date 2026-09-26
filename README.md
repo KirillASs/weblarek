@@ -622,6 +622,18 @@ Presenter - презентер содержит основную логику п
 - **Возвращает:** неявный `void`
 - **Пример:** `card.text = product.description;`
 
+**`set buttonDisabled(value: boolean)`**
+- Управляет доступностью кнопки действия
+- **Параметры:** `value` — флаг блокировки кнопки, boolean
+- **Возвращает:** неявный `void`
+- **Пример:** `card.buttonDisabled = true;` — кнопка станет неактивной
+
+**`set buttonText(value: string)`**
+- Управляет текстом на кнопке действия
+- **Параметры:** `value` — текст кнопки, строка
+- **Возвращает:** неявный `void`
+- **Пример:** `card.buttonText = 'Купить';`
+
 
 #### Класс `CardBasket`
 
@@ -984,3 +996,193 @@ Presenter - презентер содержит основную логику п
 - **Параметры:** `value` — сумма, число
 - **Возвращает:** неявный `void`
 - **Пример:** `success.total = cart.getTotalPrice();`
+
+
+### Presenter
+
+#### Класс `Presenter`
+
+##### Описание
+Класс `Presenter` является оркестратором приложения и связывает слой данных (Model) со слоем представления (View) через брокер событий. Подписывается на события от моделей и представлений, вызывает методы моделей при действиях пользователя и обновляет представления при изменении данных.
+
+##### Типы и интерфейсы
+
+Не использует собственных интерфейсов.
+
+##### Конструктор:
+**`new Presenter(events, catalog, cart, customer, api, header, gallery, modal, basket, orderForm, contactsForm, success, cardPreview)`**
+- Создает экземпляр класса для связывания моделей и представлений
+**Параметры:**
+  - `events` — брокер событий (`IEvents`)
+  - `catalog` — модель каталога (`Catalog`)
+  - `cart` — модель корзины (`Cart`)
+  - `customer` — модель покупателя (`Customer`)
+  - `api` — слой коммуникации (`ProductGateway`)
+  - `header` — представление шапки (`Header`)
+  - `gallery` — представление галереи (`Gallery`)
+  - `modal` — представление модального окна (`Modal`)
+  - `basket` — представление корзины (`Basket`)
+  - `orderForm` — представление формы заказа (`OrderForm`)
+  - `contactsForm` — представление формы контактов (`ContactsForm`)
+  - `success` — представление экрана успеха (`Success`)
+  - `cardPreview` — представление превью карточки (`CardPreview`)
+- **Пример:** `const presenter = new Presenter(events, catalog, cart, customer, api, header, gallery, modal, basket, orderForm, contactsForm, success, cardPreview);`
+
+##### Поля класса:
+
+**`events: IEvents`** (protected)
+- брокер событий для подписки и генерации событий
+- Формат: объект `IEvents`
+- Пример: `this.events.on('basket:open', () => this.openBasket());`
+
+**`catalog: Catalog`** (protected)
+- модель каталога товаров
+- Формат: объект `Catalog`
+- Пример: `this.catalog.setSelectedItem(item);`
+
+**`cart: Cart`** (protected)
+- модель корзины
+- Формат: объект `Cart`
+- Пример: `this.cart.addItem(item);`
+
+**`customer: Customer`** (protected)
+- модель покупателя
+- Формат: объект `Customer`
+- Пример: `this.customer.setData({ payment });`
+
+**`api: ProductGateway`** (protected)
+- слой коммуникации с сервером
+- Формат: объект `ProductGateway`
+- Пример: `this.api.getProducts();`
+
+**`header: Header`** (protected)
+- представление шапки сайта
+- Формат: объект `Header`
+- Пример: `this.header.counter = this.cart.getTotalCount();`
+
+**`gallery: Gallery`** (protected)
+- представление галереи товаров
+- Формат: объект `Gallery`
+- Пример: `this.gallery.catalog = cards;`
+
+**`modal: Modal`** (protected)
+- представление модального окна
+- Формат: объект `Modal`
+- Пример: `this.modal.open(this.basket.render());`
+
+**`basket: Basket`** (protected)
+- представление корзины
+- Формат: объект `Basket`
+- Пример: `this.basket.items = cards;`
+
+**`orderForm: OrderForm`** (protected)
+- представление формы заказа
+- Формат: объект `OrderForm`
+- Пример: `this.orderForm.payment = data.payment;`
+
+**`contactsForm: ContactsForm`** (protected)
+- представление формы контактов
+- Формат: объект `ContactsForm`
+- Пример: `this.contactsForm.email = data.email;`
+
+**`success: Success`** (protected)
+- представление экрана успешного оформления
+- Формат: объект `Success`
+- Пример: `this.success.total = total;`
+
+**`cardPreview: CardPreview`** (protected)
+- представление превью карточки товара
+- Формат: объект `CardPreview`
+- Пример: `this.cardPreview.render(item);`
+
+##### Методы
+
+**`loadCatalog(): void`**
+- Загружает каталог товаров с сервера и сохраняет его в модель
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** `presenter.loadCatalog();`
+
+**`renderCatalog(): void`** (protected)
+- Отрисовывает каталог из списка товаров, создавая карточки `CardCatalog`
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается автоматически при событии `catalog:changed`
+
+**`updateHeader(): void`** (protected)
+- Обновляет счётчик товаров в шапке
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается автоматически при событии `cart:changed`
+
+**`openCardPreview(): void`** (protected)
+- Открывает превью выбранного товара в модальном окне. Перед открытием проверяет состояние кнопки:
+  - если у товара нет цены (`price === null`) — кнопка получает текст «Недоступно» и блокируется;
+  - если товар уже в корзине — кнопка получает текст «Уже в корзине» и блокируется;
+  - иначе — кнопка «Купить» активна.
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается автоматически при событии `card:selected`
+
+**`addToCart(): void`** (protected)
+- Добавляет выбранный товар в корзину и закрывает превью. Не добавляет товар, если:
+  - товар не выбран;
+  - у товара нет цены;
+  - товар уже есть в корзине.
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается автоматически при событии `card:add`
+
+**`openBasket(): void`** (protected)
+- Открывает корзину в модальном окне, создавая карточки `CardBasket`. Управляет доступностью кнопки «Оформить»: блокирует её, если корзина пуста.
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается автоматически при событии `basket:open`
+
+**`updateForms(): void`** (protected)
+- Обновляет значения полей форм заказа и контактов из модели покупателя
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается автоматически при событии `customer:changed`
+
+**`openOrderForm(): void`** (protected)
+- Открывает форму заказа в модальном окне
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается автоматически при событии `order:open`
+
+**`updateOrderFormValidation(): void`** (protected)
+- Обновляет валидность формы заказа на основе ошибок модели
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается внутри `updateForms()`
+
+**`openContactsForm(): void`** (protected)
+- Открывает форму контактов в модальном окне
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается автоматически при событии `order:submit`
+
+**`updateContactsFormValidation(): void`** (protected)
+- Обновляет валидность формы контактов на основе ошибок модели
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается внутри `updateForms()`
+
+**`submitOrder(): void`** (protected)
+- Отправляет заказ на сервер и показывает экран успеха
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается автоматически при событии `contacts:submit`
+
+**`showSuccess(total: number): void`** (protected)
+- Показывает экран успешного оформления заказа
+- **Параметры:** `total` — итоговая сумма заказа, число
+- **Возвращает:** неявный `void`
+- **Пример:** `this.showSuccess(result.total);`
+
+**`closeModal(): void`** (protected)
+- Закрывает модальное окно
+- **Параметры:** нет
+- **Возвращает:** неявный `void`
+- **Пример:** вызывается автоматически при событиях `modal:close` и `success:close`
